@@ -1,21 +1,20 @@
 #!/bin/bash
-#SBATCH -p gpu  # Specify partition [compute/memory/gpu]
+#SBATCH -p gpu-devel  # Specify partition [compute/memory/gpu]
 #SBATCH -N 1                 # จำนวนโหนดที่ต้องการใช้
 #SBATCH -c 16                 # Specify number of CPU cores
 #SBATCH --gpus-per-task=4           # จำนวน GPU ที่ต้องการต่อ 1 node ในกรณีที่ใช้ compute node ให้ตั้งเป็น 0
 #SBATCH --ntasks-per-node=1         # Specify tasks per node (ตรงนี้อย่าไปแก้)
-#SBATCH -t 24:00:00                  # Specify maximum time limit (hour: minute: second)
-#SBATCH -A lt200473                 # บอกว่าคิดตังได้ที่ project ไหน sbalance -g เช็คดูว่ามีเงินจาก project ไหนบ้าง
+#SBATCH -t 2:00:00                  # Specify maximum time limit (hour: minute: second)
+#SBATCH -A lt200258                 # บอกว่าคิดตังได้ที่ project ไหน sbalance -g เช็คดูว่ามีเงินจาก project ไหนบ้าง
 #SBATCH -J train        # ตั้งชื่อ job ให้หาอ่านง่าย ๆ
 #SBATCH -o ./logs/%j/%j.out        # ตั้งชื่อไฟล์ output
-#SBATCH --reservation=thaisc_311
 
 current_date_time="`date "+%Y-%m-%d %H:%M:%S"`";
 echo $current_date_time;
-
-export HF_HOME=/scratch/lt200473-ttctvs/.cache
-export HF_HUB_CACHE=/scratch/lt200473-ttctvs/.cache
-export HF_DATASETS_CACHE=/scratch/lt200473-ttctvs/.cache
+export CATCH_DIR="./../../.cache" # recommend to set to a local directory with enough space, e.g. /scratch/$USER/.cache
+export HF_HOME=$CATCH_DIR
+export HF_HUB_CACHE=$CATCH_DIR
+export HF_DATASETS_CACHE=$CATCH_DIR
 export HF_DATASETS_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
@@ -26,8 +25,8 @@ export NCCL_NSOCKS_PERTHREAD=2
 export NCCL_TIMEOUT=360000
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_NCCL_BLOCKING_WAIT=0
-export TORCH_EXTENSIONS_DIR=/scratch/lt200473-ttctvs/.cache
-export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True,max_split_size_mb:40960
+export TORCH_EXTENSIONS_DIR=$CATCH_DIR
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export WANDB_MODE="offline"
 
 ######################
@@ -35,9 +34,7 @@ export WANDB_MODE="offline"
 ######################
 module restore
 module load Mamba
-# module load PrgEnv-gnu
 module load cpe-cuda
-# 
 module load gcc 
 module load cuda
 echo "CUDA HOME: $CUDA_HOME"
@@ -48,7 +45,7 @@ export LD_LIBRARY_PATH="$CUDA_HOME/lib64:$LD_LIBRARY_PATH"
 ### Set enviroment ###
 ######################
 conda deactivate
-conda activate /project/lt200473-ttctvs/workshop-pretrain/env
+conda activate ./../../env
 
 which python
 
@@ -79,9 +76,9 @@ LOG_DIR="./logs/$SLURM_JOB_ID"
 mkdir -p $LOG_DIR/
 export LOG_DIR=$LOG_DIR
 
-### ปกติเนื่องจาก script นี้เอาไว้ใช้รัน multi-node + multi-gpu แต่ด้วยทรัพยากรณ์ที่มีอยู่ตอนนี้เลยตั้งเป็น 1
-export GPUS_PER_NODE=1 # ถ้ามี 4 ตัว/node ก็ใส่เป็น 4 
-export CUDA_VISIBLE_DEVICES="0" # ถ้ามี 4 ตัว ก็ใส่เป็น "0,1,2,3"
+### ปกติเนื่องจาก script นี้เอาไว้ใช้รัน multi-node + multi-gpu แต่หากใครมีแค่ 1 node + 1 gpu ก็สามารถรันได้โดยไม่ต้องแก้ไขอะไรเลย แต่ถ้ามีหลาย gpu ต่อ node ก็ให้แก้ไขตามที่ comment ไว้ด้านล่างนี้ครับ
+export GPUS_PER_NODE=4 # ถ้ามี 1 ตัว/node ก็ใส่เป็น 1 
+export CUDA_VISIBLE_DEVICES="0,1,2,3" # ถ้ามี 1 ตัว ก็ใส่เป็น 0
 
 srun --output=${LOG_DIR}/node_log/node-%t.out sh smultinode.sh
 

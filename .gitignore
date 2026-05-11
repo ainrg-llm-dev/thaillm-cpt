@@ -1,0 +1,9 @@
+.cache
+env/
+example/tokenized-data/outputs/*
+example/train/logs/*
+example/tokenized-data/tokenized.out
+example/tokenized-data/resize.out
+data/*
+example/train/outputs/
+example/train/wandb/

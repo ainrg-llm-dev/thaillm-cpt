@@ -1,5 +1,5 @@
 ### model
-model_name_or_path: /project/lt200473-ttctvs/workshop-pretrain/model/Qwen3-0.6B-Base
+model_name_or_path: Qwen/Qwen3-0.6B-Base
 trust_remote_code: true
 
 ### method
@@ -10,15 +10,15 @@ finetuning_type: full #["lora", "freeze", "full"]
 freeze_vision_tower: true  # choices: [true, false] # กรณีที่ llm สามารถรับรูปภาพได้ด้วย แล้วเราจะ train แค่ text ตั้งเป็น true freeze เอาไว้
 freeze_multi_modal_projector: true  # choices: [true, false] # กรณีที่ llm สามารถรับรูปภาพได้ด้วย แล้วเราจะ train แค่ text ตั้งเป็น true freeze เอาไว้
 freeze_language_model: false  # choices: [true, false] # อันนี้เราอยาก train
-deepspeed: /project/lt200473-ttctvs/workshop-pretrain/LlamaFactory/examples/deepspeed/ds_z2_config.json # ช่วยประหยัด Ram แต่ Train ช้าลง 
+deepspeed: ./../../LlamaFactory/examples/deepspeed/ds_z2_config.json # ช่วยประหยัด Ram แต่ Train ช้าลง 
 gradient_checkpointing: true # เปิดการใช้ gradient checkpointing ช่วยลด Ram ในการ train ลงได้
 flash_attn: fa2 # เปิดการใช้ attention แบบพิเศษ ที่ใช้ Ram ความเร็วสูง ซึ่งต้องเป็น GPU A100 ขึ้นไปถึงจะใช้ได้
 report_to: wandb # report to wandb
 
 ### dataset
-tokenized_path: /project/lt200473-ttctvs/workshop-pretrain/data/tokenized-dataset
+tokenized_path: ./../tokenized-data/outputs/tokenized-data-wikipedia
 dataset_dir : .
-dataset: train-datasets #edit this
+dataset: train-datasets #edit this when chage dataset; the name of the dataset can found in dataset_info
 cutoff_len: 8192 # ความยาวสูงสุดของ input sequence
 enable_liger_kernel: true # เปิด liger kernel เพื่อช่วยลด Ram ในการ train ลงได้
 

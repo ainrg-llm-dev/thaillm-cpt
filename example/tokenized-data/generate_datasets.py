@@ -156,6 +156,7 @@ def preprocess_and_tokenize(
 
     print("Cleaning up temporary chunk files...")
     shutil.rmtree(temp_dir)
+    print("Finish, Final dataset saved and temporary files cleaned up.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="End-to-End JSON/Parquet merger, tokenizer, and packer (Chunked & Save to Disk).")
