@@ -27,7 +27,7 @@ This repository provides a complete, HPC-ready workflow to continually pre-train
 - **Distributed training** — multi-node, multi-GPU training with DeepSpeed ZeRO, Flash Attention 2, and Liger Kernel optimisations
 - **Experiment tracking** — integrated Weights & Biases (wandb) logging
 
-The stack is designed for NVIDIA H100/A100 nodes on Lanta but can be adapted to any SLURM-managed GPU cluster.
+The stack is designed for NVIDIA A100 nodes on Lanta but can be adapted to any SLURM-managed GPU cluster.
 
 ---
 
