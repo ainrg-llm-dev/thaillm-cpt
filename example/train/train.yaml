@@ -1,0 +1,44 @@
+### model
+model_name_or_path: /project/lt200473-ttctvs/workshop-pretrain/model/Qwen3-0.6B-Base
+trust_remote_code: true
+
+### method
+stage: pt # choices: ["pt", "sft", "rm", "ppo", "dpo", "kto"] # ดูได้จาก https://github.com/hiyouga/LlamaFactory/blob/4d3621e3d3c85bbd2f8f8864776f468957e97e90/src/llamafactory/hparams/finetuning_args.py
+do_train: true
+finetuning_type: full #["lora", "freeze", "full"]
+# แต่ Qwen3-0.6B-Base ไม่มีเกี่ยวกับภาพดังนั้นเปิดหรือไม่เปิดไม่ต่างกัน
+freeze_vision_tower: true  # choices: [true, false] # กรณีที่ llm สามารถรับรูปภาพได้ด้วย แล้วเราจะ train แค่ text ตั้งเป็น true freeze เอาไว้
+freeze_multi_modal_projector: true  # choices: [true, false] # กรณีที่ llm สามารถรับรูปภาพได้ด้วย แล้วเราจะ train แค่ text ตั้งเป็น true freeze เอาไว้
+freeze_language_model: false  # choices: [true, false] # อันนี้เราอยาก train
+deepspeed: /project/lt200473-ttctvs/workshop-pretrain/LlamaFactory/examples/deepspeed/ds_z2_config.json # ช่วยประหยัด Ram แต่ Train ช้าลง 
+gradient_checkpointing: true # เปิดการใช้ gradient checkpointing ช่วยลด Ram ในการ train ลงได้
+flash_attn: fa2 # เปิดการใช้ attention แบบพิเศษ ที่ใช้ Ram ความเร็วสูง ซึ่งต้องเป็น GPU A100 ขึ้นไปถึงจะใช้ได้
+report_to: wandb # report to wandb
+
+### dataset
+tokenized_path: /project/lt200473-ttctvs/workshop-pretrain/data/tokenized-dataset
+dataset_dir : .
+dataset: train-datasets #edit this
+cutoff_len: 8192 # ความยาวสูงสุดของ input sequence
+enable_liger_kernel: true # เปิด liger kernel เพื่อช่วยลด Ram ในการ train ลงได้
+
+### output
+output_dir: ./outputs/Qwen3-0.6B-cpt-test # ตั้งชื่ออะไรก็ได้ที่เราจำได้
+logging_steps: 10 # กี่ step จะเก็บ log สักครั้ง
+save_steps: 500 # กี่ step จะเก็บ model สักครั้ง
+save_total_limit: 3 # เก็บเช็ค point ไว้ได้สูงสุดกี่อันเช่น [500, 1000, 1500] จะเก็บไว้แค่ 3 อันล่าสุดพอ 2000 มาจะลบ 500 ทิ้ง
+plot_loss: true
+overwrite_output_dir: true
+save_only_model: false
+
+### train
+per_device_train_batch_size: 2 # ตั้งให้เยอะที่สุดที่ Ram เราจะรับไหว ssh เข้าไปเช็คจากการ์ดจอด้วยคำสั่ง nvidia-smi
+gradient_accumulation_steps: 1 # ตัวที่ช่วยเพิ่มขนาด batch size โดยการคำนวณ gradient หลายๆ step ก่อนจะอัพเดท weights สักครั้งต้องมีข้อมูลเยอะพอจน steps ไม่เสียไปเรื่อย ๆ ค่อยใช้
+learning_rate: 4.5e-5
+num_train_epochs: 1.0
+lr_scheduler_type: cosine_with_min_lr
+lr_scheduler_kwargs: {'min_lr_rate': 0.01} # decay ไปเหลือ max_lr/100
+disable_shuffling: true # ปิดการสุ่ม
+bf16: true # ใช้ bfloat16 ถ้าใช้ A100 ขึ้นไป เป็นหน่วยความจำที่แม่นยำกว่า fp16(float16)
+ddp_timeout: 180000000
+resume_from_checkpoint: null
