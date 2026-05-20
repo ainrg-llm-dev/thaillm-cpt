@@ -77,6 +77,12 @@ ml Mamba
 ---
 
 ## Installation
+### 0. Download Data
+```bash
+mkdir data
+cd data
+hf download wikimedia/wikipedia/20231101.th --local-dir wikipedia-th --repo-type dataset
+```
 
 ### 1. Clone the Repository
 
