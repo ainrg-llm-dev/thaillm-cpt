@@ -77,12 +77,6 @@ ml Mamba
 ---
 
 ## Installation
-### 0. Download Data
-```bash
-mkdir data
-cd data
-hf download wikimedia/wikipedia/20231101.th --local-dir wikipedia-th --repo-type dataset
-```
 
 ### 1. Clone the Repository
 
@@ -125,6 +119,14 @@ pip install flash_attn==2.8.3 --no-build-isolation
 ---
 
 ## Usage
+
+### 0. Download Data
+
+```bash
+mkdir data
+cd data
+hf download wikimedia/wikipedia/20231101.th --local-dir wikipedia-th --repo-type dataset
+```
 
 ### 1. Data Tokenization
 
